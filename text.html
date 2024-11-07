@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Text Display Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 20px;
+            border-radius: 4px;
+            white-space: pre-wrap; /* Preserve formatting like spaces and newlines */
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 16px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Text Display</h1>
+    <p>Below is the text you provided:</p>
+    
+    <pre>
+1.numpy_lib.ipynb - Colaboratory
+Basic Data Structures in Python List, tuple, set
+and Dictionary
+import numpy as np
+a=[1,2,3] #creating a list, list is mutable
+print(a)
+a.append(4)
+print(a)
+b=(3,4) #creating a tuple, tuple is immutable, i.e.,
+#elements can neither be added nor deleted.
+c={1,3,5,7,7} #creating a set, set is mutable and dup
+licate elements
+#are removed.
+c.add(11)
+print(c)
+#Dictionary in Python is a collection of keyvalue pairs
+#used to store data values like a map,
+dict={1:'study',2:'play',3:'sleep'}
+print(dict)
+print(dict.keys())
+print(dict.values())
+Output :
+[1, 2, 3]
+[1, 2, 3, 4]
+{1, 3, 5, 7, 11}
+{1: 'study', 2: 'play', 3: 'sleep'}
+dict_keys([1, 2, 3])
+dict_values(['study', 'play', 'sleep'])
+#Creating Arrays
+import numpy as np
+a=np.array([1,2,3])
+b=np.array([(1,2,3),(4,5,6)])
+print(np.zeros(3))
+print(np.ones((3,4)))
+print(np.eye(5))
+print(np.full((2,3),8))
+print(np.random.random(5))
+print(np.random.rand(2,3))
+print(np.random.randint(1,10))
+print(np.arange(0,10,1))
+Output :
+[0. 0. 0.]
+[[1. 1. 1. 1.]
+[1. 1. 1. 1.]
+[1. 1. 1. 1.]]
+[[1. 0. 0. 0. 0.]
+[0. 1. 0. 0. 0.]
+[0. 0. 1. 0. 0.]
+[0. 0. 0. 1. 0.]
+[0. 0. 0. 0. 1.]]
+[[8 8 8]
+[8 8 8]]
+[0.88418721 0.14253349 0.91896909 0.00416535 0.88769156]
+[[0.18155395 0.73247216 0.43821816]
+[0.91286424 0.14630294 0.87836735]]
+4
+[0 1 2 3 4 5 6 7 8 9]
+#Inspecting Properties
+import numpy as np
+data1=np.array([[1,2,3],[4,5,6],[7,8,9]])
+print(data1)
+print(np.size(data1)) #Retuns total number of element
+s in the array
+print(np.ndim(data1))#Returns number of dimensions of
+array
+print(np.shape(data1)) #Returns tuple of integers rep
+resenting
+#the size of the array in each dimension
+data2=np.array([9,7,1,2])
+print(data2.dtype)
+Output :
+[[1 2 3]
+[4 5 6]
+[7 8 9]]
+9
+2
+(3, 3)
+int64
+#Copying/Sorting/Reshaping
+import numpy as np
+a=np.array([1,2,3,4])
+b=np.array([[1,2,3],[4,5,6],[7,8,9]])
+s=np.copy(a) #Copies array to new memory
+print(s)
+print(b.flatten()) #Flattens 2D array to 1D array
+print(b.reshape(9,1))
+print(np.resize(b,(2,2)))
+Output :
+[1 2 3 4]
+[1 2 3 4 5 6 7 8 9]
+[[1]
+[2]
+[3]
+[4]
+[5]
+[6]
+[7]
+[8]
+[9]]
+[[1 2]
+[3 4]]
+ 
+#Adding/Removing Elements
+b1=np.array([1,2,3,4,5])
+print(np.append(b1,3)) #appends values to end of the
+array.
+print(np.insert(b1,3,6)) #Inserts value into the arra
+y before index 3.
+b2=np.array([[4,-2,1],[1,-3,0],[2,0,-1]])
+print(b2)
+b3=np.insert(b2,1,2,axis=1)#inserts a column of all 2
+'s at index 1 of the array
+print(b3)
+print(np.delete(b2,1,axis=0)) #Deletes row at index 1
+of the array
+print(np.delete(b2,0,axis=1)) #Deletes column at inde
+x 0 the array
+Output :
+[1 2 3 4 5 3]
+[1 2 3 6 4 5]
+[[ 4 -2 1]
+[ 1 -3 0]
+[ 2 0 -1]]
+[[ 4 2 -2 1]
+[ 1 2 -3 0]
+[ 2 2 0 -1]]
+[[ 4 -2 1]
+[ 2 0 -1]]
+[[-2 1]
+[-3 0]
+[ 0 -1]] 
+#Combining/Splitting
+import numpy as np
+a1=np.array([[1,2,3],[3,4,5],[6,7,8]])
+print(a1)
+b1=np.array([[5,6,7],[7,8,9],[1,2,3]])
+print(b1)
+c1=np.concatenate((a1,b1),axis=0)
+d1=np.concatenate((a1,b1),axis=1)
+print(c1)
+print(d1)
+print(np.hsplit(a1,1))
+print(np.vsplit(a1,1))
+Output :
+[[1 2 3]
+[3 4 5]
+[6 7 8]]
+[[5 6 7]
+[7 8 9]
+[1 2 3]]
+[[1 2 3]
+[3 4 5]
+[6 7 8]
+[5 6 7]
+[7 8 9]
+[1 2 3]]
+[[1 2 3 5 6 7]
+[3 4 5 7 8 9]
+[6 7 8 1 2 3]]
+[array([[1, 2, 3],
+ [3, 4, 5],
+ [6, 7, 8]])]
+[array([[1, 2, 3],
+ [3, 4, 5],
+ [6, 7, 8]])]
+#Indexing/Slicing/Subsetting
+import numpy as np
+a=np.array([1,2,3,4,5,6,7])
+a[3]=0 #Assigns the array element on index 3 the valu
+e of 0
+print(a[2:5]) #Returns the elements at indices 2,3,4,
+5
+b=np.array([[1,2,3],[4,5,6],[7,8,9]])
+b[1,2]=-12 #Assigning the value -
+12 to element at index [1][2]
+print(b)
+print(b[1,:])
+print(b[:,2])
+print(b[0:2])
+print(b[:,1:2])
+print(b[:,[1,2]]) #selecting multiple columns at a ti
+me
+print(b[[0,2],:]) #selecting multiple rows at a time
+print(b<5) #Returns array with boolean values
+print(b[b<5]) #Returns array elements smaller than 5
+print(b.T) #Returns transpose of the array
+Output :
+[3 0 5]
+[[ 1 2 3]
+[ 4 5 -12]
+[ 7 8 9]]
+[ 4 5 -12]
+[ 3 -12 9]
+[[ 1 2 3]
+[ 4 5 -12]]
+[[2]
+[5]
+[8]]
+[[ 2 3]
+[ 5 -12]
+[ 8 9]]
+[[1 2 3]
+[7 8 9]]
+[[ True True True]
+[ True False True]
+[False False False]]
+[ 1 2 3 4 -12]
+[[ 1 4 7]
+[ 2 5 8]
+[ 3 -12 9]]
+#Scalar Math
+data1=np.array([3,1,2,-4,5])
+print(data1)
+# Performs scalar arithmetic on the array
+print((np.add(data1,1)),(np.subtract(data1,2)),
+ (np.multiply(data1,-1)))
+Output :
+[ 3 1 2 -4 5]
+[ 2 0 1 -5 4] [ 1 -1 0 -6 3] [-3 -1 -2 4 -5]
+#Vector Math
+a1=np.array([2.7,3.1,-4.3,-5.8])
+a2=np.array([1,0,9,7])
+print((np.add(a1,a2)),(np.subtract(a1,a2)),
+ (np.multiply(a1,a2)))
+print(np.array_equal(a1,a2))
+print(np.log(a1)) #Natural log of each element in the
+array
+print(np.abs(a1)) #Absolute value of each element in
+the array
+print(np.ceil(a1)) #Rounds up to the nearest int
+a3=[1.7,2.1,3.6,5.3,6.2,9.5]
+print(np.floor(a3)) #Rounds down to the nearest int
+print(np.round(a3)) #Rounds to the nearest integer
+Output :
+[3.7 3.1 4.7 1.2] [ 1.7 3.1 -13.3 -12.8] [ 2.7 0. -38.7 
+-40.6]
+False
+[0.99325177 1.13140211 nan nan]
+[2.7 3.1 4.3 5.8]
+[ 3. 4. -4. -5.]
+[1. 2. 3. 5. 6. 9.]
+[ 2. 2. 4. 5. 6. 10.]
+#Statistics
+a1=np.array([1,2,3,7,8]) #creates a numpy array
+print(np.min(a1),np.max(a1),np.sum(a1))
+#Returns mean, variance and standard deviation of the array.
+print(np.mean(a1),np.var(a1),np.std(a1))
+a2=np.array([[1,2,3],[4,5,6],[7,8,9]])
+print(np.var(a2,axis=1)) #Returns variance of the array.
+print(np.corrcoef(a2[1:],a2[2:])) #Returns correlation coeffic
+ient of the array
+Output :
+1 8 21
+4.2 7.760000000000001 2.785677655436824
+[0.66666667 0.66666667 0.66666667]
+[[1. 1. 1.]
+[1. 1. 1.]
+[1. 1. 1.]]
+ 2.pandas_lib.ipynb – Colaboratory
+Importing.csv file into Colab Notebook as A DataFrame
+from google.colab import files
+uploaded=files.upload()
+import pandas as pd
+import io
+df=pd.read_csv(io.BytesIO(uploaded['enjoysport.csv'])
+)
+print(df)
+#Creating datastructures in PandasSeries and DataFrame
+#There are three types of data structures
+#in pandas-Series, DataFrame and Panel.
+import numpy as np
+import pandas as pd
+data1=[1,7,2]
+data1 = pd.Series(data1, index = ['x','y','z'])
+#Creates a Series
+#type data structure with specified index.Default ind
+ex is
+#integers starting from 0.
+print(data1,type(data1))
+print(data1['y'])#Returns value at index 'y.'
+#Creating a Dictionary.
+data2={"Age":[25,45,22,36,29,60],
+ "Height(in ft)":[5.6,6.1,4.9,5.7,5.1,5.9], 
+"Qualification":["B.Tech",'B.Tech','M.Phil','Ph.D','B
+.Sc','CA'],
+ 
+"Salary":[18000,90000,20000,50000,40000,100000],
+"Married":[False,True,True,False,True,True]}
+#Converts Dictionary into a DataFrame with specified
+index.
+data2=pd.DataFrame(data2,index=['Ram','Krishna','Sita
+','Prasad','Gayatri','Shankar'])
+print(data2,type(data2))
+Output :
+x 1
+y 7
+z 2
+dtype: int64 <class 'pandas.core.series.Series'>
+7
+ Age Height(in ft) Qualification Salary Married
+Ram 25 5.6 B.Tech 18000 False
+Krishna 45 6.1 B.Tech 90000 True
+Sita 22 4.9 M.Phil 20000 True
+Prasad 36 5.7 Ph.D 50000 False
+Gayatri 29 5.1 B.Sc 40000 True
+Shankar 60 5.9 CA 100000 True 
+<class 'pandas.core.frame.DataFrame'>
+CodeText
+#Finding Summary of the DataFrame
+data2.info()
+data2.describe() #Prints Statistical information of
+#all the columns having numerical data
+Output :
+<class 'pandas.core.frame.DataFrame'>
+Index: 6 entries, Ram to Shankar
+Data columns (total 5 columns):
+# Column Non-Null Count Dtype 
+--- ------ -------------- ----- 
+0 Age 6 non-null int64 
+1 Height(in ft) 6 non-null float64
+2 Qualification 6 non-null object 
+3 Salary 6 non-null int64 
+4 Married 6 non-null bool 
+dtypes: bool(1), float64(1), int64(2), object(1)
+memory usage: 246.0+ bytes
+Age Height(in ft) Salary
+count 6.000000 6.000000 6.00000
+mean 36.166667 5.550000 53000.00000
+std 14.302680 0.463681 34842.50278
+min 22.000000 4.900000 18000.00000
+25% 26.000000 5.225000 25000.00000
+Age Height(in ft) Salary
+50% 32.500000 5.650000 45000.00000
+75% 42.750000 5.850000 80000.00000
+max 60.000000 6.100000 100000.00000
+#Displaying Entries of the DataFrame
+print(data2.columns)
+print(data2.index)
+print(data2.values)
+print(data2.head())
+print(data2.head(2))
+Output :
+Index(['Age', 'Height(in ft)', 'Qualification', 'Salary', 
+'Married'], dtype='object')
+Index(['Ram', 'Krishna', 'Sita', 'Prasad', 'Gayatri', 'Shankar'], 
+dtype='object')
+[[25 5.6 'B.Tech' 18000 False]
+[45 6.1 'B.Tech' 90000 True]
+[22 4.9 'M.Phil' 20000 True]
+[36 5.7 'Ph.D' 50000 False]
+[29 5.1 'B.Sc' 40000 True]
+[60 5.9 'CA' 100000 True]]
+ Age Height(in ft) Qualification Salary Married
+Ram 25 5.6 B.Tech 18000 False
+Krishna 45 6.1 B.Tech 90000 True
+Sita 22 4.9 M.Phil 20000 True
+Prasad 36 5.7 Ph.D 50000 False
+Gayatri 29 5.1 B.Sc 40000 True
+ Age Height(in ft) Qualification Salary Married
+Ram 25 5.6 B.Tech 18000 False
+Krishna 45 6.1 B.Tech 90000 True
+#Slicing and Indexing of DataFrame
+print(data2['Salary'])#Prints values under the column
+'Salary'
+print(data2['Krishna':'Gayatri'])#Prints all the valu
+es starting
+#from index Krishna to Gayatri
+print(data2[0:2]) #Returns 1st and 2nd rows of the Da
+taFrame
+print(data2[-3:])
+print(data2['Qualification'][1:3])
+#loc gets rows (and/or columns) with particular label
+s.
+print(data2.loc['Ram':'Krishna','Height(in ft)':'Qual
+ification'])
+#iloc gets rows (and/or columns) at integer locations
+.
+print(data2.iloc[0:2,1:3])
+print(data2['Age']<40)
+print(data2.loc[data2['Age']<40])
+Output :
+Ram 18000
+Krishna 90000
+Sita 20000
+Prasad 50000
+Gayatri 40000
+Shankar 100000
+Name: Salary, dtype: int64
+ Age Height(in ft) Qualification Salary Married
+Krishna 45 6.1 B.Tech 90000 True
+Sita 22 4.9 M.Phil 20000 True
+Prasad 36 5.7 Ph.D 50000 False
+Gayatri 29 5.1 B.Sc 40000 True
+ Age Height(in ft) Qualification Salary Married
+Ram 25 5.6 B.Tech 18000 False
+Krishna 45 6.1 B.Tech 90000 True
+ Age Height(in ft) Qualification Salary Married
+Prasad 36 5.7 Ph.D 50000 False
+Gayatri 29 5.1 B.Sc 40000 True
+Shankar 60 5.9 CA 100000 True
+Krishna B.Tech
+Sita M.Phil
+Name: Qualification, dtype: object
+ Height(in ft) Qualification
+Ram 5.6 B.Tech
+Krishna 6.1 B.Tech
+ Height(in ft) Qualification
+Ram 5.6 B.Tech
+Krishna 6.1 B.Tech
+Ram True
+Krishna False
+Sita True
+Prasad True
+Gayatri True
+Shankar False
+Name: Age, dtype: bool
+ Age Height(in ft) Qualification Salary Married
+Ram 25 5.6 B.Tech 18000 False
+Sita 22 4.9 M.Phil 20000 True
+Prasad 36 5.7 Ph.D 50000 False
+Gayatri 29 5.1 B.Sc 40000 True
+#Removing a Column or a Row from a DataFrame
+a=data2.drop('Age',axis=1)
+print(a)
+b=data2.drop('Sita',axis=0)
+print(b)
+Output :
+ Height(in ft) Qualification Salary Married
+Ram 5.6 B.Tech 18000 False
+Krishna 6.1 B.Tech 90000 True
+Sita 4.9 M.Phil 20000 True
+Prasad 5.7 Ph.D 50000 False
+Gayatri 5.1 B.Sc 40000 True
+Shankar 5.9 CA 100000 True
+ Age Height(in ft) Qualification Salary Married
+Ram 25 5.6 B.Tech 18000 False
+Krishna 45 6.1 B.Tech 90000 True
+Prasad 36 5.7 Ph.D 50000 False
+Gayatri 29 5.1 B.Sc 40000 True
+Shankar 60 5.9 CA 100000 True
+#Adding a Column/Row to a DataFrame
+#Adding a Column
+address=['Kkd','Rjy','Bpt','Slo','Ong','Bza',]
+data2['Address']=address
+print(data2)
+#Adding a Row
+data2.loc[len(data2.index)]=[18,5.2,'MCA',10000,'Fals
+e','vskp']
+print(data2)
+Output :
+ Age Height(in ft) Qualification Salary Married Address
+Ram 25 5.6 B.Tech 18000 False Kkd
+Krishna 45 6.1 B.Tech 90000 True Rjy
+Sita 22 4.9 M.Phil 20000 True Bpt
+Prasad 36 5.7 Ph.D 50000 False Slo
+Gayatri 29 5.1 B.Sc 40000 True Ong
+Shankar 60 5.9 CA 100000 True Bza
+ Age Height(in ft) Qualification Salary Married Address
+Ram 25 5.6 B.Tech 18000 False Kkd
+Krishna 45 6.1 B.Tech 90000 True Rjy
+Sita 22 4.9 M.Phil 20000 True Bpt
+Prasad 36 5.7 Ph.D 50000 False Slo
+Gayatri 29 5.1 B.Sc 40000 True Ong
+Shankar 60 5.9 CA 100000 True Bza
+6 18 5.2 MCA 10000 False vskp
+#Shuffling,Sorting and Grouping
+#Shuffling a Data Set
+c=data2.reindex(np.random.permutation(data2.index))
+print(c)
+#Sorting
+d=data2.sort_values(by='Salary',ascending=True)
+print(d)
+#Grouping a Data Set
+#The groupby method allows you to group rows of data
+#together and call aggregate functions
+e=data2.groupby('Qualification').count()
+print(e)
+Output :
+ Age Height(in ft) Qualification Salary Married Address
+Sita 22 4.9 M.Phil 20000 True Bpt
+6 18 5.2 MCA 10000 False vskp
+Krishna 45 6.1 B.Tech 90000 True Rjy
+Ram 25 5.6 B.Tech 18000 False Kkd
+Gayatri 29 5.1 B.Sc 40000 True Ong
+Shankar 60 5.9 CA 100000 True Bza
+Prasad 36 5.7 Ph.D 50000 False Slo
+ Age Height(in ft) Qualification Salary Married Address
+6 18 5.2 MCA 10000 False vskp
+Ram 25 5.6 B.Tech 18000 False Kkd
+Sita 22 4.9 M.Phil 20000 True Bpt
+Gayatri 29 5.1 B.Sc 40000 True Ong
+Prasad 36 5.7 Ph.D 50000 False Slo
+Krishna 45 6.1 B.Tech 90000 True Rjy
+Shankar 60 5.9 CA 100000 True Bza
+ Age Height(in ft) Salary Married Address
+Qualification 
+B.Sc 1 1 1 1 1
+B.Tech 2 2 2 2 2
+CA 1 1 1 1 1
+M.Phil 1 1 1 1 1
+MCA 1 1 1 1 1
+Ph.D 1 1 1 1 1
+ 3.matplot_lib.ipynb – Colaboratory
+import numpy as np
+import matplotlib.pyplot as plt
+x=np.linspace(0,10,100)
+y=x*x
+plt.figure(figsize=(4,2))
+plt.plot(x,y)
+plt.title('Square function')
+plt.xlabel("x")
+plt.ylabel("$x^2$")
+plt.figure(figsize=(5,5))
+plt.plot(x,np.sin(x))
+plt.title('sin(x)')
+plt.xlabel("x")
+plt.ylabel("sin(x)")
+plt.figure(figsize=(6,3))
+plt.plot(x,np.tan(x))
+plt.title('Tangent function')
+plt.xlabel("x")
+plt.ylabel("tan(x)")
+plt.figure(figsize=(3,3))
+plt.plot(x,np.exp(x))
+plt.title('Exponential function')
+plt.xlabel("x")
+plt.ylabel("e^x")
+Output :
+Text(0, 0.5, 'e^x')
+
+#Scatter Plot
+x=(np.random.random(10)*10).round(1)
+y=(np.random.random(10)*10).round(2)
+print(x,y,sep="\n")
+plt.figure(figsize=(5,5))
+plt.scatter(x,y)
+plt.xlabel('x')
+plt.ylabel('y')
+Output :
+[7.2 9.6 5.1 1. 4.3 2.8 9.4 7.4 3.7 8.7]
+[1.36 1.39 2.55 5.56 9.02 6.75 6.84 7.4 9.88 7.3 ]
+Text(0, 0.5, 'y')
+#Bar Plot
+items=np.array(['Coke','Pepsi','Fanta','Maaza','Mirin
+da'])
+qty=np.array([100,85,20,30,45])
+plt.bar(items,qty)
+plt.title('Sales')
+plt.xlabel('Beverages')
+plt.ylabel('Qty Sold')
+Output :
+Text(0, 0.5, 'Qty Sold')
+#Pie Plot
+plt.pie(qty,labels=items,autopct='%0.1f')#autopct is
+used to la
+#wedge with their numerical value.
+plt.title("% of Sales")
+Output :
+Text(0.5, 1.0, '% of Sales')
+#Histogram
+import numpy as np
+from matplotlib import pyplot as plt
+marks=np.random.randint(0,100,60)
+grade_intervals=[0,30,50,80,100]
+#print(marks)
+plt.hist(marks,grade_intervals)
+plt.title('Student Grades')
+plt.xlabel('Percentage')
+plt.ylabel('No.of Students')
+Output :
+Text(0, 0.5, 'No.of Students')
+#Box Plot
+math_marks=np.random.randint(10,100,180)
+phy_marks=np.random.randint(0,100,180)
+chem_marks=np.random.randint(30,100,180)
+marks=[math_marks,phy_marks,chem_marks]
+plt.boxplot(marks,labels=['Maths','Physics','Chemistr
+y'])
+Output :
+{'whiskers': [<matplotlib.lines.Line2D at 0x7f0a2d6bf7f0>,
+ <matplotlib.lines.Line2D at 0x7f0a2d6bfac0>,
+ <matplotlib.lines.Line2D at 0x7f0a2d6cfbe0>,
+ <matplotlib.lines.Line2D at 0x7f0a2d6cfeb0>,
+ <matplotlib.lines.Line2D at 0x7f0a2d65dfd0>,
+ <matplotlib.lines.Line2D at 0x7f0a2d6692e0>],
+'caps': [<matplotlib.lines.Line2D at 0x7f0a2d6bfd90>,
+ <matplotlib.lines.Line2D at 0x7f0a2d6cf0a0>,
+ <matplotlib.lines.Line2D at 0x7f0a2d65d1c0>,
+ <matplotlib.lines.Line2D at 0x7f0a2d65d490>,
+ <matplotlib.lines.Line2D at 0x7f0a2d6695b0>,
+ <matplotlib.lines.Line2D at 0x7f0a2d669880>],
+'boxes': [<matplotlib.lines.Line2D at 0x7f0a2d6bf520>,
+ <matplotlib.lines.Line2D at 0x7f0a2d6cf910>,
+ <matplotlib.lines.Line2D at 0x7f0a2d65dd00>],
+'medians': [<matplotlib.lines.Line2D at 0x7f0a2d6cf370>,
+ <matplotlib.lines.Line2D at 0x7f0a2d65d760>,
+ <matplotlib.lines.Line2D at 0x7f0a2d669b50>],
+'fliers': [<matplotlib.lines.Line2D at 0x7f0a2d6cf640>,
+ <matplotlib.lines.Line2D at 0x7f0a2d65da30>,
+ <matplotlib.lines.Line2D at 0x7f0a2d669e20>],
+'means': []}
+ 4.FindS.ipynb – Colaboratory
+from google.colab import files
+uploaded=files.upload()
+import pandas as pd
+import numpy as np
+import io
+df=pd.read_csv(io.BytesIO(uploaded['walkinghyp.csv'])
+)
+print(df)
+d=np.array(df)[:,:1] #Printing attribute values exclu
+ding target concept
+print(d)
+target = np.array(df)[:,-1] #Printing target
+print("The target is:",target)
+#training function to implement find-s algorithm
+def train(c,t):
+ for i, val in enumerate(t):
+ if val == "Yes":
+ specific_hypothesis= c[i].copy()
+ break
+ for i, val in enumerate(c):
+ if t[i] == "Yes":
+ for x in range(len(specific_hypothesis)):
+ if val[x] != specific_hypothesis[x]:
+ specific_hypothesis[x] ='?'
+ return specific_hypothesis
+print("The final hypothesis is:",train(d,target))
+Output :
+Saving walkinghyp.csv to walkinghyp.csv
+ Time Weather Temperature Company Humidity Wind Goes
+0 Morning Sunny Warm Yes Mild Strong Yes
+1 Evening Rainy Cold No Mild Normal No
+2 Morning Sunny Moderate Yes Normal Normal Yes
+3 Evening Sunny Cold Yes High Strong Yes
+[['Morning' 'Sunny' 'Warm' 'Yes' 'Mild' 'Strong']
+['Evening' 'Rainy' 'Cold' 'No' 'Mild' 'Normal']
+['Morning' 'Sunny' 'Moderate' 'Yes' 'Normal' 'Normal']
+['Evening' 'Sunny' 'Cold' 'Yes' 'High' 'Strong']]
+The target is: ['Yes' 'No' 'Yes' 'Yes']
+The final hypothesis is: ['?' 'Sunny' '?' 'Yes' '?' '?']
+5.Candidate_Elimination.ipynb – Colaboratory
+from google.colab import files
+uploaded=files.upload()
+import numpy as np
+import pandas as pd
+data=pd.read_csv('enjoysport.csv')
+print(data)
+attributes=np.array(data.iloc[:,0:-1]) #Prints attribute
+#values of all the examples
+print(attributes)
+target=np.array(data.iloc[:,-1])
+print(target)
+def learn(attributes,target):
+ specific_h=attributes[0].copy()
+ print(specific_h)
+ general_h=[["?" for i in range(len(specific_h))] for i in
+ range(len(specific_h))]
+ print(general_h)
+ for i,h in enumerate(attributes):
+ if target[i]=="Yes":
+ for x in range(len(specific_h)):
+ if h[x]!=specific_h[x]:
+ specific_h[x]='?'
+ general_h[x][x]='?'
+ #print(specific_h)
+#print(specific_h)
+ if target[i]=="No":
+ for x in range(len(specific_h)):
+ if h[x]!=specific_h[x]:
+ general_h[x][x]=specific_h[x]
+ else:
+ general_h[x][x]='?'
+#print("steps of Candidate Elimination Algoithm",i+1)
+#print(specific_h)
+#print(general_h)
+ indices=[i for i, val in enumerate(general_h) if val==['?','
+?','?','?','?','?']]
+ for i in indices:
+ general_h.remove(['?','?','?','?','?','?'])
+ return specific_h,general_h
+s_final,g_final=learn(attributes,target)
+print("Final Specific_h:", s_final, sep="\n")
+print("Final General_h:", g_final, sep="\n")
+Output :
+initialization of specific_h and general_h
+['Sunny' 'Warm' 'Normal' 'Strong' 'Warm' 'Same']
+[['?', '?', '?', '?', '?', '?'], ['?', '?', '?', '?', '?', 
+'?'], ['?', '?', '?', '?', '?', '?'], ['?', '?', '?', '?', 
+'?', '?'], ['?', '?', '?', '?', '?', '?'], ['?', '?', '?', 
+'?', '?', '?']]
+Final Specific_h:
+['Sunny' 'Warm' 'Normal' 'Strong' 'Warm' 'Same']
+Final general_h:
+[['Sunny', '?', '?', '?', '?', '?'], ['?', 'Warm', '?', '?', 
+'?', '?'], ['?', '?', 'Normal', '?', '?', '?'], ['?', '?', 
+'?', '?', '?', 'Same']]
+ 
+ 6. Linear Regression
+from google.colab import files
+uploaded=files.upload()
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import io
+df=pd.read_csv(io.BytesIO(uploaded['MBA Salary.csv'])
+)
+# print(df)
+x=df.iloc[:,-2]
+x=x.values
+x=x.reshape(-1,1)
+#print(x)
+y=df.iloc[:,-1]
+y=y.values
+y=y.reshape(-1,1)
+#print(y)
+plt.scatter(x,y)
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x,y,te
+st_size=0.05)
+x_train=x_train/max(x_train)
+y_train=y_train/max(y_train)
+#print(y_train)
+x_test=x_test/max(x_test)
+y_test=y_test/max(y_test)
+#print(y_test)
+from sklearn.linear_model import LinearRegression
+model=LinearRegression()
+model.fit(x_train,y_train)
+print('model intercept:',model.intercept_)
+print('model coefficients',model.coef_)
+plt.scatter(x_train, y_train)
+plt.plot(x_train, model.predict(x_train))
+y_pred=model.predict(x_test)
+print(y_pred)
+from sklearn.metrics import mean_squared_error
+print(mean_squared_error(y_test,y_pred))
+plt.scatter(x_test,y_test)
+plt.plot(x_test,y_pred)
+Output :
+<matplotlib.collections.PathCollection at 0x7f0a25da7490>
+model intercept: [0.12487424]
+model coefficients [[0.57667559]]
+[[0.69844942]
+[0.70154983]
+[0.6364413 ]]
+0.05597849739320094
+[<matplotlib.lines.Line2D at 0x7f0a25dc7040>]
+ 7. Logistic Regression
+from google.colab import files
+uploaded=files.upload()
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import io
+import seaborn as sns
+df=pd.read_csv(io.BytesIO(uploaded['User_Data.csv']))
+print(df)
+X = df.iloc[:, [2,3]].values
+Y = df.iloc[:, 4].values
+X
+Y
+# Splitting the dataset into the Training set and Tes
+t set
+from sklearn.model_selection import train_test_split
+X_Train, X_Test, Y_Train, Y_Test = train_test_split(X
+, Y, test_size = 0.25
+, random_state = None)
+# Fitting the Logistic Regression into the Training s
+et
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression(random_state = 0)
+classifier.fit(X_Train, Y_Train)
+Y_Pred = classifier.predict(X_Test)
+Y_Pred
+# Making the Confusion Matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(Y_Test, Y_Pred)
+cm
+# Heatmap of Confusion matrix
+sns.heatmap(pd.DataFrame(cm), annot=True)
+from sklearn.metrics import accuracy_score
+accuracy =accuracy_score(Y_Test, Y_Pred)
+accuracy
+Output :
+Please rerun this cell to enable.
+Saving User_Data.csv to User_Data (1).csv
+ User ID Gender Age EstimatedSalary Purchased
+0 15624510 Male 19 19000 0
+1 15810944 Male 35 20000 0
+2 15668575 Female 26 43000 0
+3 15603246 Female 27 57000 0
+4 15804002 Male 19 76000 0
+.. ... ... ... ... ...
+395 15691863 Female 46 41000 1
+396 15706071 Male 51 23000 1
+397 15654296 Female 50 20000 1
+398 15755018 Male 36 33000 0
+399 15594041 Female 49 36000 1
+[400 rows x 5 columns]
+0.72
+ 
+ 8.DecisionTree_Classifier.ipynb – Colaboratory
+import numpy as np
+import pandas as pd
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report
+import io
+data=pd.read_csv(io.BytesIO(uploaded['Iris.csv']))
+print(data)
+x=data.values[:,1:5]
+y=data.values[:,-1]
+y=y.reshape(-1,1)
+#print(y)
+#print(x)
+x_train,x_test,y_train,y_test=train_test_split(x,y,te
+st_size=0.3)
+#Perform training with GiniIndex
+clf_gini=DecisionTreeClassifier(criterion='gini',rand
+om_state=100,max_depth=3)
+clf_gini.fit(x_train,y_train)
+#Perform training with Entropy
+clf_entropy=DecisionTreeClassifier(criterion='entropy
+',random_state=100,max_depth=3)
+clf_entropy.fit(x_train,y_train)
+y_pred=clf_entropy.predict(x_test)
+print("Confusion Matrix:",confusion_matrix(y_test, y_
+pred))
+print ("Accuracy :",accuracy_score(y_test,y_pred)*100
+)
+Output :
+ Id SepalLengthCm SepalWidthCm PetalLengthCm PetalWidthCm \
+0 1 5.1 3.5 1.4 0.2 
+1 2 4.9 3.0 1.4 0.2 
+2 3 4.7 3.2 1.3 0.2 
+3 4 4.6 3.1 1.5 0.2 
+4 5 5.0 3.6 1.4 0.2 
+.. ... ... ... ... ... 
+145 146 6.7 3.0 5.2 2.3 
+146 147 6.3 2.5 5.0 1.9 
+147 148 6.5 3.0 5.2 2.0 
+148 149 6.2 3.4 5.4 2.3 
+149 150 5.9 3.0 5.1 1.8 
+ Species 
+0 Iris-setosa 
+1 Iris-setosa 
+2 Iris-setosa 
+3 Iris-setosa 
+4 Iris-setosa 
+.. ... 
+145 Iris-virginica 
+146 Iris-virginica 
+147 Iris-virginica 
+148 Iris-virginica 
+149 Iris-virginica 
+[150 rows x 6 columns]
+Confusion Matrix: [[20 0 0]
+[ 0 8 0]
+[ 0 1 16]]
+Accuracy : 97.77777777777777
+ 9.SupportVectorMachine.ipynb – Colaboratory
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from google.colab import files
+uploaded=files.upload()
+data=pd.read_csv('Iris.csv')
+data.head()
+#Encoding the categorical column
+data=data.replace({"Species": {"Iris-setosa":1,"Irisversicolor":2,"Iris-virginica":3}})
+#Visualize the new dataset
+data.head()
+#plt.figure(1)
+sns.heatmap(data.corr())
+plt.title('Correlation On iris Classes')
+x = data.iloc[:,:-1]
+y = data.iloc[:, -1].values
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test = train_test_split(x, y
+, test_size = 0.25, random_state = 0)
+#Create the SVM model
+from sklearn.svm import SVC
+classifier = SVC(kernel = 'linear', random_state = 0)
+#Fit the model for the data
+classifier.fit(x_train, y_train)
+#Make the prediction
+y_pred = classifier.predict(x_test)
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+print(cm)
+from sklearn.metrics import accuracy_score
+print ("Accuracy:",accuracy_score(y_test,y_pred)*100)
+Output :
+[[13 0 0]
+[ 0 16 0]
+[ 0 0 9]]
+Accuracy : 100.0
+ 10. K-MEANS CLUSTERING
+# Importing the dataset 
+from google.colab import files
+uploaded=files.upload()
+import numpy as nm 
+import matplotlib.pyplot as mtp 
+import pandas as pd
+import io
+dataset = pd.read_csv(io.BytesIO(uploaded['Iris.csv']))
+print(dataset) 
+x = dataset.iloc[:, [3, 4]].values 
+#finding optimal number of clusters using the elbow method 
+from sklearn.cluster import KMeans 
+wcss_list= [] #Initializing the list for the values of WCSS 
+ 
+#Using for loop for iterations from 1 to 10. 
+for i in range(1, 11): 
+ kmeans = KMeans(n_clusters=i, init='kmeans++', random_state= 42) 
+ kmeans.fit(x) 
+ wcss_list.append(kmeans.inertia_) 
+mtp.plot(range(1, 11), wcss_list) 
+mtp.title('The Elobw Method Graph') 
+mtp.xlabel('Number of clusters(k)') 
+mtp.ylabel('wcss_list') 
+mtp.show() 
+#training the K-means model on a dataset 
+kmeans = KMeans(n_clusters=5, init='k-means++', random_state= 42) 
+y_predict= kmeans.fit_predict(x)
+#visulaizing the clusters 
+mtp.scatter(x[y_predict == 0, 0], x[y_predict == 0, 1], s = 100, c =
+'blue', label = 'Cluster 1') #for first cluster 
+mtp.scatter(x[y_predict == 1, 0], x[y_predict == 1, 1], s = 100, c =
+'green', label = 'Cluster 2') #for second cluster 
+mtp.scatter(x[y_predict== 2, 0], x[y_predict == 2, 1], s = 100, c =
+'red', label = 'Cluster 3') #for third cluster 
+mtp.scatter(x[y_predict == 3, 0], x[y_predict == 3, 1], s = 100, c =
+'cyan', label = 'Cluster 4') #for fourth cluster 
+mtp.scatter(x[y_predict == 4, 0], x[y_predict == 4, 1], s = 100, c =
+'magenta', label = 'Cluster 5') #for fifth cluster 
+mtp.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:
+, 1], s = 300, c = 'yellow', label = 'Centroid') 
+mtp.title('Clusters of customers') 
+mtp.xlabel('PETAL LENGTH') 
+mtp.ylabel('PETAL WIDTH') 
+mtp.legend() 
+mtp.show() 
+Output :
+ Id SepalLengthCm SepalWidthCm PetalLengthCm PetalWidthCm 
+\
+0 1 5.1 3.5 1.4 0.2 
+1 2 4.9 3.0 1.4 0.2 
+2 3 4.7 3.2 1.3 0.2 
+3 4 4.6 3.1 1.5 0.2 
+4 5 5.0 3.6 1.4 0.2 
+.. ... ... ... ... ... 
+145 146 6.7 3.0 5.2 2.3 
+146 147 6.3 2.5 5.0 1.9 
+147 148 6.5 3.0 5.2 2.0 
+148 149 6.2 3.4 5.4 2.3 
+149 150 5.9 3.0 5.1 
+    </pre>
+</div>
+
+</body>
+</html>
