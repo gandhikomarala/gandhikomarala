@@ -24,7 +24,7 @@ jobs:
           pip install pytest pydantic
       - name: Run Test Suite
         run: |
-          pytest tests/ -v
+          PYTHONPATH=. pytest tests/ -v
       - name: Verify Standalone Runner
         run: |
           python scripts/demo_run.py
