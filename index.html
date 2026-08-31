@@ -4,177 +4,1314 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pokémon GO — Web Edition</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+      color: #f8fafc;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      max-height: 840px;
+      background: #0f172a;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 500px) {
+      #game-container {
+        border-radius: 36px;
+        border: 4px solid #334155;
+        height: 94vh;
+      }
+    }
+
+    /* TOP STATUS BAR */
+    #top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      z-index: 50;
+      pointer-events: auto;
+    }
+
+    .trainer-badge {
+      display: flex;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.9);
+      backdrop-filter: blur(12px);
+      padding: 6px 14px;
+      border-radius: 24px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+    }
+
+    .trainer-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: #fff;
+      margin-right: 10px;
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    }
+
+    .trainer-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .trainer-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: 0.5px;
+    }
+
+    .trainer-level {
+      font-size: 11px;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .resources-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .res-pill {
+      background: rgba(30, 41, 59, 0.9);
+      backdrop-filter: blur(12px);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* MAP CANVAS */
+    #map-viewport {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #0f172a;
+      overflow: hidden;
+    }
+
+    #map-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ON-SCREEN CONTROLS */
+    #dpad {
+      position: absolute;
+      bottom: 95px;
+      left: 18px;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .dpad-row {
+      display: flex;
+      gap: 3px;
+    }
+
+    .dpad-btn {
+      width: 42px;
+      height: 42px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1.5px solid rgba(56, 189, 248, 0.4);
+      border-radius: 12px;
+      color: #38bdf8;
+      font-size: 16px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      transition: transform 0.1s, background 0.1s;
+    }
+
+    .dpad-btn:active {
+      transform: scale(0.92);
+      background: #38bdf8;
+      color: #0f172a;
+    }
+
+    #auto-roam-toggle {
+      position: absolute;
+      bottom: 95px;
+      right: 18px;
+      z-index: 40;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1.5px solid #38bdf8;
+      padding: 10px 16px;
+      border-radius: 24px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #38bdf8;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    #auto-roam-toggle.active {
+      background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+      color: #fff;
+      border-color: #fff;
+    }
+
+    /* BOTTOM MENU BAR */
+    #bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 85px;
+      background: linear-gradient(0deg, rgba(15, 23, 42, 0.98) 0%, rgba(15, 23, 42, 0) 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .pokeball-menu-btn {
+      pointer-events: auto;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ef4444 50%, #f8fafc 50%);
+      border: 4px solid #1e293b;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .pokeball-menu-btn:hover { transform: scale(1.08); }
+    .pokeball-menu-btn:active { transform: scale(0.92); }
+
+    .pokeball-menu-btn::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 6px;
+      background: #1e293b;
+    }
+
+    .pokeball-menu-btn::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid #1e293b;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-circle-btn {
+      pointer-events: auto;
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(30, 41, 59, 0.95);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .nav-circle-btn:hover { transform: scale(1.1); background: #3b82f6; }
+    .nav-circle-btn:active { transform: scale(0.95); }
+
+    #btn-nearby { left: 24px; bottom: 18px; }
+    #btn-bag { right: 24px; bottom: 18px; }
+
+    /* FULLSCREEN OVERLAY MODALS */
+    .game-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      background: #0f172a;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: modalFadeIn 0.2s ease-out forwards;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* ENCOUNTER SCREEN */
+    #encounter-view {
+      background: radial-gradient(circle at center, #1e3a8a 0%, #0f172a 70%, #020617 100%);
+    }
+
+    .enc-header {
+      position: absolute;
+      top: 18px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .enc-poke-badge {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 8px 18px;
+      border-radius: 24px;
+      border: 1.5px solid rgba(56, 189, 248, 0.5);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
+
+    .enc-poke-name {
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .enc-poke-cp {
+      font-size: 13px;
+      font-weight: 800;
+      color: #facc15;
+    }
+
+    .btn-flee {
+      background: rgba(239, 68, 68, 0.9);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 20px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+
+    #encounter-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .enc-bottom-controls {
+      position: absolute;
+      bottom: 24px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .control-pill {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 8px 16px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    /* POKESTOP MODAL */
+    #pokestop-view {
+      background: radial-gradient(circle at center, #2563eb 0%, #0f172a 100%);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .pokestop-disc {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      border: 8px solid #fff;
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.8);
+      overflow: hidden;
+      cursor: grab;
+      margin-bottom: 20px;
+      transition: transform 0.8s cubic-bezier(0.1, 0.9, 0.2, 1);
+      background: url("https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80") center/cover;
+    }
+
+    .pokestop-disc.spinning {
+      transform: rotate(1080deg);
+    }
+
+    .loot-container {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      min-height: 50px;
+    }
+
+    .loot-bubble {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #fff;
+      color: #000;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      animation: popBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popBounce {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* CATCH CELEBRATION MODAL */
+    #catch-celebration {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 120;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .catch-img-preview {
+      width: 170px;
+      height: 170px;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 25px rgba(56, 189, 248, 0.7));
+      animation: floatPoke 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatPoke {
+      from { transform: translateY(0); }
+      to { transform: translateY(-12px); }
+    }
+
+    .btn-action-primary {
+      margin-top: 24px;
+      background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+      border: none;
+      padding: 12px 40px;
+      border-radius: 28px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    }
+
+    /* POKEDEX & STORAGE */
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .btn-close {
+      background: rgba(239, 68, 68, 0.85);
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .poke-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .poke-card {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 12px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .poke-card:hover {
+      transform: translateY(-3px);
+      border-color: #38bdf8;
+    }
+
+    .poke-card-img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+    }
+
+    /* GYM ARENA */
+    #gym-view {
+      background: radial-gradient(circle at center, #7f1d1d 0%, #450a0a 100%);
+      padding: 20px;
+    }
+
+    .gym-battleground {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      flex: 1;
+      padding: 10px 0;
+    }
+
+    .hp-track {
+      width: 80%;
+      max-width: 280px;
+      height: 12px;
+      background: #334155;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-top: 6px;
+    }
+
+    .hp-fill {
+      height: 100%;
+      background: #22c55e;
+      width: 100%;
+      transition: width 0.2s ease;
+    }
+  </style>
 </head>
 <body>
 
-<div id="app-container">
+<div id="game-container">
 
-  <!-- TOP TRAINER STATUS BAR -->
+  <!-- TOP TRAINER BAR -->
   <div id="top-bar">
-    <div class="trainer-pill" id="btn-profile">
-      <div class="trainer-avatar" id="avatar-circle">G</div>
-      <div class="trainer-info">
-        <span class="trainer-name" id="display-trainer-name">Gandhi</span>
-        <span class="trainer-level" id="display-trainer-lvl">Lv. 1 • 0 XP</span>
+    <div class="trainer-badge" id="btn-open-profile">
+      <div class="trainer-avatar">G</div>
+      <div class="trainer-text">
+        <span class="trainer-name">Trainer Gandhi</span>
+        <span class="trainer-level" id="lbl-level">Lv. 1 • 0 XP</span>
       </div>
     </div>
 
-    <div class="top-resources">
-      <div class="resource-badge">
-        <span class="stardust-icon">✨</span>
-        <span id="display-stardust">1,000</span>
-      </div>
-      <div class="resource-badge">
-        <span class="pokecoin-icon">🪙</span>
-        <span id="display-coins">150</span>
-      </div>
+    <div class="resources-row">
+      <div class="res-pill"><span style="color:#c084fc">✨</span> <span id="lbl-stardust">1,500</span></div>
+      <div class="res-pill"><span style="color:#facc15">🪙</span> <span id="lbl-coins">250</span></div>
     </div>
   </div>
 
-  <!-- MAP VIEWPORT CANVAS -->
+  <!-- MAP RADAR CANVAS -->
   <div id="map-viewport">
     <canvas id="map-canvas"></canvas>
 
-    <!-- DPAD MOVEMENT CONTROLS -->
-    <div id="movement-controls">
-      <div class="dpad-btn" id="dpad-up">▲</div>
+    <!-- DPAD CONTROLS -->
+    <div id="dpad">
+      <div class="dpad-btn" id="btn-up">▲</div>
       <div class="dpad-row">
-        <div class="dpad-btn" id="dpad-left">◀</div>
-        <div class="dpad-btn" id="dpad-down">▼</div>
-        <div class="dpad-btn" id="dpad-right">▶</div>
+        <div class="dpad-btn" id="btn-left">◀</div>
+        <div class="dpad-btn" id="btn-down">▼</div>
+        <div class="dpad-btn" id="btn-right">▶</div>
       </div>
     </div>
 
-    <button id="auto-roam-btn">🧭 Auto Roam: OFF</button>
+    <button id="auto-roam-toggle">🧭 Auto Roam: OFF</button>
   </div>
 
   <!-- BOTTOM ACTION BAR -->
   <div id="bottom-bar">
-    <div class="side-btn" id="btn-nearby" title="Nearby Pokémon">🔍</div>
-    <div class="main-pokeball-menu" id="btn-main-menu" title="Main Menu">
-      <div class="main-pokeball-inner"></div>
-    </div>
-    <div class="side-btn" id="btn-bag" title="Item Bag">🎒</div>
+    <div class="nav-circle-btn" id="btn-nearby" title="Pokédex">📖</div>
+    <div class="pokeball-menu-btn" id="btn-main-menu" title="Menu"></div>
+    <div class="nav-circle-btn" id="btn-bag" title="Item Bag">🎒</div>
   </div>
 
-  <!-- ENCOUNTER & CATCH OVERLAY -->
-  <div class="overlay-screen" id="encounter-screen">
-    <div class="encounter-header">
-      <div class="encounter-info">
-        <div class="encounter-name" id="enc-name">Pikachu</div>
-        <div class="encounter-cp" id="enc-cp">CP 420</div>
+  <!-- ENCOUNTER & CATCH SCREEN -->
+  <div class="game-modal" id="encounter-view">
+    <div class="enc-header">
+      <div class="enc-poke-badge">
+        <div class="enc-poke-name" id="enc-poke-name">Pikachu</div>
+        <div class="enc-poke-cp" id="enc-poke-cp">CP 420</div>
       </div>
-      <button class="flee-btn" id="btn-flee">🏃 Flee</button>
+      <button class="btn-flee" id="btn-flee-enc">🏃 Flee</button>
     </div>
 
     <canvas id="encounter-canvas"></canvas>
 
-    <div class="encounter-bottom-bar">
-      <button class="berry-btn" id="btn-feed-berry">🍇 Razz Berry (<span id="count-berry">5</span>)</button>
-      <button class="ball-selector" id="btn-toggle-ball">🔴 <span id="current-ball-name">Poké Ball</span> (<span id="count-ball">20</span>)</button>
+    <div class="enc-bottom-controls">
+      <button class="control-pill" id="btn-use-berry">🍇 Razz Berry (<span id="txt-berry-count">10</span>)</button>
+      <button class="control-pill" id="btn-switch-ball">🔴 <span id="txt-ball-name">Poké Ball</span> (<span id="txt-ball-count">30</span>)</button>
     </div>
   </div>
 
-  <!-- CATCH RESULT MODAL -->
-  <div id="catch-modal">
-    <img src="" alt="Caught Pokemon" class="catch-image" id="catch-modal-img">
-    <div class="catch-title" id="catch-modal-title">Gotcha! Pikachu was caught!</div>
-    <div class="catch-stats">
-      <div class="catch-stat-item">
-        <span class="catch-stat-val" id="catch-modal-cp">420</span>
-        <span class="catch-stat-lbl">Combat Power</span>
-      </div>
-      <div class="catch-stat-item">
-        <span class="catch-stat-val" id="catch-modal-candy">+3</span>
-        <span class="catch-stat-lbl">Candies</span>
-      </div>
-      <div class="catch-stat-item">
-        <span class="catch-stat-val" id="catch-modal-stardust">+100</span>
-        <span class="catch-stat-lbl">Stardust</span>
-      </div>
+  <!-- CATCH CELEBRATION MODAL -->
+  <div id="catch-celebration">
+    <img src="" class="catch-img-preview" id="celebration-img">
+    <h2 style="font-size: 24px; font-weight: 900; color: #38bdf8; margin-top: 14px;" id="celebration-title">Gotcha!</h2>
+    <div style="display: flex; gap: 16px; margin-top: 12px; background: #1e293b; padding: 12px 24px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);">
+      <div><span style="font-size: 18px; font-weight: 800; color:#facc15" id="celebration-cp">420</span><br><span style="font-size: 11px; color:#94a3b8">CP</span></div>
+      <div><span style="font-size: 18px; font-weight: 800; color:#38bdf8">+3</span><br><span style="font-size: 11px; color:#94a3b8">Candies</span></div>
+      <div><span style="font-size: 18px; font-weight: 800; color:#c084fc">+100</span><br><span style="font-size: 11px; color:#94a3b8">Stardust</span></div>
     </div>
-    <button class="btn-primary" id="btn-catch-ok">OK</button>
+    <button class="btn-action-primary" id="btn-celebration-ok">OK</button>
   </div>
 
-  <!-- POKÉSTOP SCREEN -->
-  <div class="overlay-screen" id="pokestop-screen">
-    <div class="screen-header" style="width: 100%; padding: 16px;">
-      <h2 class="screen-title" id="pokestop-title">Pokéstop: Tech Hub</h2>
-      <button class="close-btn" id="btn-close-pokestop">✕</button>
+  <!-- POKESTOP VIEW -->
+  <div class="game-modal" id="pokestop-view">
+    <div class="modal-header" style="width: 100%;">
+      <h3 class="modal-title" id="txt-pokestop-name">Pokéstop: Tech Hub</h3>
+      <button class="btn-close" id="btn-close-pokestop">✕</button>
     </div>
-    <div class="pokestop-disc-container" id="pokestop-disc">
-      <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Pokéstop Photo" class="pokestop-disc-img">
-    </div>
-    <p style="font-size: 13px; color: #94a3b8; font-weight: 600;">Swipe or tap disc to spin for items!</p>
-    <div class="pokestop-loot-bubbles" id="pokestop-loot"></div>
+    <div class="pokestop-disc" id="pokestop-disc-elem"></div>
+    <p style="font-size: 13px; color: #94a3b8; font-weight: 700;">Tap or swipe the disc to spin for free items!</p>
+    <div class="loot-container" id="pokestop-loot-area"></div>
   </div>
 
   <!-- MAIN MENU MODAL -->
-  <div class="overlay-screen" id="menu-screen">
-    <div class="screen-header">
-      <h2 class="screen-title">Main Menu</h2>
-      <button class="close-btn" id="btn-close-menu">✕</button>
+  <div class="game-modal" id="menu-modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Main Menu</h3>
+      <button class="btn-close" id="btn-close-menu">✕</button>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-      <button class="btn-primary" id="menu-btn-pokemon" style="background: #10b981;">🐾 Pokémon Storage</button>
-      <button class="btn-primary" id="menu-btn-pokedex" style="background: #ef4444;">📖 Pokédex</button>
-      <button class="btn-primary" id="menu-btn-bag" style="background: #3b82f6;">🎒 Items Bag</button>
-      <button class="btn-primary" id="menu-btn-gym" style="background: #f59e0b;">⚔️ Gym Raid Arena</button>
-      <button class="btn-primary" id="menu-btn-reset" style="background: #64748b; font-size: 12px; padding: 8px;">🔄 Reset Save Data</button>
+    <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px;">
+      <button class="btn-action-primary" id="menu-opt-pokemon" style="background:#10b981">🐾 Pokémon Storage</button>
+      <button class="btn-action-primary" id="menu-opt-pokedex" style="background:#ef4444">📖 Pokédex</button>
+      <button class="btn-action-primary" id="menu-opt-bag" style="background:#3b82f6">🎒 Items Bag</button>
+      <button class="btn-action-primary" id="menu-opt-gym" style="background:#f59e0b">⚔️ Gym Raid Arena</button>
+      <button class="btn-action-primary" id="menu-opt-reset" style="background:#64748b; font-size:13px; padding:8px;">🔄 Reset Progress</button>
     </div>
   </div>
 
-  <!-- POKEMON STORAGE / POKEDEX SCREEN -->
-  <div class="overlay-screen" id="pokedex-screen">
-    <div class="screen-header">
-      <h2 class="screen-title" id="pokedex-title">Pokémon Storage (0)</h2>
-      <button class="close-btn" id="btn-close-pokedex">✕</button>
+  <!-- POKEDEX & STORAGE MODAL -->
+  <div class="game-modal" id="pokedex-modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="pokedex-header-title">Pokémon Storage</h3>
+      <button class="btn-close" id="btn-close-pokedex">✕</button>
     </div>
-    <div class="pokemon-grid" id="pokemon-grid"></div>
+    <div class="poke-grid" id="pokedex-grid"></div>
   </div>
 
-  <!-- ITEM BAG SCREEN -->
-  <div class="overlay-screen" id="bag-screen">
-    <div class="screen-header">
-      <h2 class="screen-title">Item Bag</h2>
-      <button class="close-btn" id="btn-close-bag">✕</button>
+  <!-- ITEM BAG MODAL -->
+  <div class="game-modal" id="bag-modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Item Bag</h3>
+      <button class="btn-close" id="btn-close-bag">✕</button>
     </div>
-    <div id="bag-items-list" style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto;"></div>
+    <div id="bag-list" style="padding: 16px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto;"></div>
   </div>
 
-  <!-- GYM RAID ARENA SCREEN -->
-  <div class="overlay-screen" id="gym-screen">
-    <div class="screen-header">
-      <h2 class="screen-title">⚔️ Legendary Raid Battle</h2>
-      <button class="close-btn" id="btn-close-gym">✕</button>
+  <!-- GYM RAID ARENA -->
+  <div class="game-modal" id="gym-view">
+    <div class="modal-header">
+      <h3 class="modal-title">⚔️ Legendary Raid Battle</h3>
+      <button class="btn-close" id="btn-close-gym">✕</button>
     </div>
-    <div class="gym-arena">
-      <div class="boss-container">
-        <h3 id="gym-boss-name" style="font-weight: 800; font-size: 18px; color: #f87171;">Mewtwo (Raid Boss)</h3>
-        <div class="hp-bar-outer"><div class="hp-bar-inner" id="boss-hp-bar"></div></div>
-        <img id="gym-boss-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" style="width: 130px; height: 130px; object-fit: contain; margin-top: 10px;">
+    <div class="gym-battleground">
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <h4 style="font-size: 18px; font-weight:900; color:#f87171;">Mewtwo (Raid Boss)</h4>
+        <div class="hp-track"><div class="hp-fill" id="gym-boss-hp"></div></div>
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" style="width:130px; height:130px; object-fit:contain; margin-top:8px;">
       </div>
 
-      <div class="player-poke-container">
-        <img id="gym-player-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" style="width: 110px; height: 110px; object-fit: contain;">
-        <div class="hp-bar-outer"><div class="hp-bar-inner" id="player-hp-bar"></div></div>
-        <h4 id="gym-player-name" style="font-weight: 700; font-size: 14px; margin-top: 4px; color: #38bdf8;">Charizard (CP 2400)</h4>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" style="width:110px; height:110px; object-fit:contain;">
+        <div class="hp-track"><div class="hp-fill" id="gym-player-hp"></div></div>
+        <span style="font-size: 14px; font-weight:800; color:#38bdf8; margin-top:4px;">Charizard (CP 2400)</span>
       </div>
 
-      <div class="gym-controls">
-        <button class="btn-primary" id="btn-gym-attack" style="padding: 10px 20px; font-size: 14px;">⚡ Fast Attack</button>
-        <button class="charge-move-btn" id="btn-gym-charge">🔥 Charge Move</button>
-        <button class="btn-primary" id="btn-gym-dodge" style="padding: 10px 20px; background: #64748b; font-size: 14px;">🛡️ Dodge</button>
+      <div style="display:flex; gap:12px; margin-top:10px;">
+        <button class="btn-action-primary" id="btn-gym-fast" style="padding:10px 18px; font-size:13px;">⚡ Fast Attack</button>
+        <button class="btn-action-primary" id="btn-gym-charge" style="background:#eab308; color:#000; padding:10px 18px; font-size:13px;">🔥 Charge Move</button>
+        <button class="btn-action-primary" id="btn-gym-dodge" style="background:#64748b; padding:10px 18px; font-size:13px;">🛡️ Dodge</button>
       </div>
     </div>
   </div>
 
 </div>
 
-<script src="pokemon_data.js"></script>
-<script src="audio.js"></script>
-<script src="game.js"></script>
+<!-- MASTER EMBEDDED JAVASCRIPT GAME ENGINE -->
+<script>
+// 1. DATASET
+const POKEMON_DATA = [
+  { id: 1, name: "Bulbasaur", type: "Grass", baseCP: 350, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png", rate: 0.75 },
+  { id: 4, name: "Charmander", type: "Fire", baseCP: 380, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png", rate: 0.75 },
+  { id: 6, name: "Charizard", type: "Fire", baseCP: 1800, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png", rate: 0.2 },
+  { id: 7, name: "Squirtle", type: "Water", baseCP: 340, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png", rate: 0.75 },
+  { id: 9, name: "Blastoise", type: "Water", baseCP: 1700, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/9.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png", rate: 0.2 },
+  { id: 25, name: "Pikachu", type: "Electric", baseCP: 420, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", rate: 0.8 },
+  { id: 94, name: "Gengar", type: "Ghost", baseCP: 1950, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png", rate: 0.2 },
+  { id: 133, name: "Eevee", type: "Normal", baseCP: 450, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png", rate: 0.75 },
+  { id: 143, name: "Snorlax", type: "Normal", baseCP: 1850, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/143.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/143.png", rate: 0.15 },
+  { id: 149, name: "Dragonite", type: "Dragon", baseCP: 2100, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/149.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png", rate: 0.12 },
+  { id: 150, name: "Mewtwo", type: "Psychic", baseCP: 2750, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/150.png", rate: 0.08 },
+  { id: 448, name: "Lucario", type: "Fighting", baseCP: 1750, sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/448.png", mini: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/448.png", rate: 0.2 }
+];
+
+// 2. SOUND SYNTHESIS
+class WebAudioSFX {
+  constructor() { this.ctx = null; }
+  init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+  play(f, d = 0.2, type = "sine") {
+    try {
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(f, this.ctx.currentTime);
+      g.gain.setValueAtTime(0.15, this.ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + d);
+      osc.connect(g);
+      g.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + d);
+    } catch(e) {}
+  }
+}
+const sfx = new WebAudioSFX();
+
+// 3. MASTER GAME CONTROLLER
+class PokemonGo {
+  constructor() {
+    this.player = {
+      level: 1, xp: 0, stardust: 1500, coins: 250,
+      x: 0, y: 0,
+      inventory: { pokeball: 30, greatball: 10, ultraball: 5, razzberry: 10, potion: 10 },
+      storage: [],
+      pokedexSeen: new Set([1, 4, 7, 25])
+    };
+
+    this.selectedBall = "pokeball";
+    this.fedBerry = false;
+    this.autoRoam = false;
+    this.wildPokemon = [];
+    this.pokestops = [
+      { id: 1, name: "Silicon Central Hub", x: -120, y: -100 },
+      { id: 2, name: "Botanical Garden Gate", x: 140, y: -80 },
+      { id: 3, name: "Metro Terminal Square", x: -100, y: 120 }
+    ];
+    this.gyms = [{ id: 1, name: "Legendary Arena", x: 0, y: -190 }];
+
+    this.init();
+  }
+
+  init() {
+    this.load();
+    this.setupCanvases();
+    this.spawnEntities();
+    this.bindEvents();
+    this.updateUI();
+
+    requestAnimationFrame(this.loop.bind(this));
+  }
+
+  load() {
+    try {
+      const saved = localStorage.getItem("PKGO_DATA");
+      if (saved) {
+        const p = JSON.parse(saved);
+        this.player = { ...this.player, ...p };
+        this.player.pokedexSeen = new Set(p.pokedexSeen || [1, 4, 7, 25]);
+      }
+    } catch(e) {}
+
+    if (this.player.storage.length === 0) {
+      const pika = POKEMON_DATA.find(p => p.id === 25);
+      this.player.storage.push({ uid: Date.now(), id: pika.id, name: pika.name, cp: 420, sprite: pika.sprite });
+    }
+  }
+
+  save() {
+    try {
+      localStorage.setItem("PKGO_DATA", JSON.stringify({
+        ...this.player,
+        pokedexSeen: Array.from(this.player.pokedexSeen)
+      }));
+    } catch(e) {}
+  }
+
+  setupCanvases() {
+    this.mapCanvas = document.getElementById("map-canvas");
+    this.mapCtx = this.mapCanvas.getContext("2d");
+    this.encCanvas = document.getElementById("encounter-canvas");
+    this.encCtx = this.encCanvas.getContext("2d");
+
+    const resize = () => {
+      const rect = this.mapCanvas.parentElement.getBoundingClientRect();
+      this.mapCanvas.width = rect.width;
+      this.mapCanvas.height = rect.height;
+      this.encCanvas.width = rect.width;
+      this.encCanvas.height = rect.height;
+    };
+    window.addEventListener("resize", resize);
+    resize();
+  }
+
+  spawnEntities() {
+    while (this.wildPokemon.length < 5) {
+      const p = POKEMON_DATA[Math.floor(Math.random() * POKEMON_DATA.length)];
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 50 + Math.random() * 160;
+      const img = new Image();
+      img.src = p.mini;
+
+      this.wildPokemon.push({
+        uid: Date.now() + Math.random(),
+        data: p,
+        x: this.player.x + Math.cos(ang) * dist,
+        y: this.player.y + Math.sin(ang) * dist,
+        cp: Math.floor(p.baseCP * (0.8 + Math.random() * 0.4)),
+        image: img,
+        expires: Date.now() + 60000
+      });
+      this.player.pokedexSeen.add(p.id);
+    }
+  }
+
+  updateUI() {
+    document.getElementById("lbl-level").innerText = `Lv. ${this.player.level} • ${this.player.xp} XP`;
+    document.getElementById("lbl-stardust").innerText = this.player.stardust.toLocaleString();
+    document.getElementById("lbl-coins").innerText = this.player.coins.toLocaleString();
+    this.save();
+  }
+
+  bindEvents() {
+    const move = (dx, dy) => {
+      this.player.x += dx * 16;
+      this.player.y += dy * 16;
+      this.wildPokemon = this.wildPokemon.filter(p => Date.now() < p.expires);
+      this.spawnEntities();
+    };
+
+    document.getElementById("btn-up").onclick = () => move(0, -1);
+    document.getElementById("btn-down").onclick = () => move(0, 1);
+    document.getElementById("btn-left").onclick = () => move(-1, 0);
+    document.getElementById("btn-right").onclick = () => move(1, 0);
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" || e.key === "w") move(0, -1);
+      if (e.key === "ArrowDown" || e.key === "s") move(0, 1);
+      if (e.key === "ArrowLeft" || e.key === "a") move(-1, 0);
+      if (e.key === "ArrowRight" || e.key === "d") move(1, 0);
+    });
+
+    const roam = document.getElementById("auto-roam-toggle");
+    roam.onclick = () => {
+      this.autoRoam = !this.autoRoam;
+      roam.classList.toggle("active", this.autoRoam);
+      roam.innerText = this.autoRoam ? "🧭 Auto Roam: ON" : "🧭 Auto Roam: OFF";
+    };
+
+    this.mapCanvas.onclick = (e) => {
+      const rect = this.mapCanvas.getBoundingClientRect();
+      const cx = this.mapCanvas.width / 2;
+      const cy = this.mapCanvas.height / 2;
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      for (let p of this.wildPokemon) {
+        const sx = cx + (p.x - this.player.x);
+        const sy = cy + (p.y - this.player.y);
+        if (Math.hypot(clickX - sx, clickY - sy) < 40) {
+          this.startEncounter(p);
+          return;
+        }
+      }
+
+      for (let ps of this.pokestops) {
+        const sx = cx + (ps.x - this.player.x);
+        const sy = cy + (ps.y - this.player.y);
+        if (Math.hypot(clickX - sx, clickY - sy) < 45) {
+          this.openPokestop(ps);
+          return;
+        }
+      }
+
+      for (let g of this.gyms) {
+        const sx = cx + (g.x - this.player.x);
+        const sy = cy + (g.y - this.player.y);
+        if (Math.hypot(clickX - sx, clickY - sy) < 50) {
+          this.openGym();
+          return;
+        }
+      }
+    };
+
+    const show = (id) => {
+      document.querySelectorAll(".game-modal").forEach(m => m.style.display = "none");
+      if (id) document.getElementById(id).style.display = "flex";
+    };
+
+    document.getElementById("btn-main-menu").onclick = () => show("menu-modal");
+    document.getElementById("btn-close-menu").onclick = () => show(null);
+    document.getElementById("menu-opt-pokemon").onclick = () => { show("pokedex-modal"); this.renderStorage(); };
+    document.getElementById("menu-opt-pokedex").onclick = () => { show("pokedex-modal"); this.renderPokedex(); };
+    document.getElementById("menu-opt-bag").onclick = () => { show("bag-modal"); this.renderBag(); };
+    document.getElementById("menu-opt-gym").onclick = () => this.openGym();
+    document.getElementById("menu-opt-reset").onclick = () => {
+      if (confirm("Reset game?")) { localStorage.removeItem("PKGO_DATA"); location.reload(); }
+    };
+
+    document.getElementById("btn-nearby").onclick = () => { show("pokedex-modal"); this.renderPokedex(); };
+    document.getElementById("btn-bag").onclick = () => { show("bag-modal"); this.renderBag(); };
+    document.getElementById("btn-close-pokedex").onclick = () => show(null);
+    document.getElementById("btn-close-bag").onclick = () => show(null);
+    document.getElementById("btn-close-pokestop").onclick = () => show(null);
+    document.getElementById("btn-close-gym").onclick = () => show(null);
+    document.getElementById("btn-flee-enc").onclick = () => { show(null); sfx.play(200, 0.3, "sawtooth"); };
+
+    document.getElementById("pokestop-disc-elem").onclick = () => this.spinPokestop();
+
+    this.setupThrow();
+
+    document.getElementById("btn-celebration-ok").onclick = () => {
+      document.getElementById("catch-celebration").style.display = "none";
+      show(null);
+      this.updateUI();
+    };
+
+    document.getElementById("btn-switch-ball").onclick = () => {
+      const b = ["pokeball", "greatball", "ultraball"];
+      this.selectedBall = b[(b.indexOf(this.selectedBall) + 1) % b.length];
+      this.updateBallUI();
+    };
+
+    document.getElementById("btn-use-berry").onclick = () => {
+      if (this.player.inventory.razzberry > 0 && !this.fedBerry) {
+        this.player.inventory.razzberry--;
+        this.fedBerry = true;
+        sfx.play(600, 0.2);
+        alert("Fed Razz Berry! Catch chance boosted!");
+        this.updateBallUI();
+      }
+    };
+
+    // Gym Battles
+    document.getElementById("btn-gym-fast").onclick = () => this.gymAttack(35);
+    document.getElementById("btn-gym-charge").onclick = () => this.gymAttack(120);
+    document.getElementById("btn-gym-dodge").onclick = () => { sfx.play(400, 0.1); alert("Dodged attack!"); };
+  }
+
+  updateBallUI() {
+    const names = { pokeball: "Poké Ball", greatball: "Great Ball", ultraball: "Ultra Ball" };
+    document.getElementById("txt-ball-name").innerText = names[this.selectedBall];
+    document.getElementById("txt-ball-count").innerText = this.player.inventory[this.selectedBall];
+    document.getElementById("txt-berry-count").innerText = this.player.inventory.razzberry;
+  }
+
+  startEncounter(p) {
+    this.currentEnc = p;
+    this.fedBerry = false;
+    document.getElementById("encounter-view").style.display = "flex";
+    document.getElementById("enc-poke-name").innerText = p.data.name;
+    document.getElementById("enc-poke-cp").innerText = `CP ${p.cp}`;
+    this.updateBallUI();
+
+    this.pokeImg = new Image();
+    this.pokeImg.src = p.data.sprite;
+
+    this.ball = {
+      x: this.encCanvas.width / 2,
+      y: this.encCanvas.height - 80,
+      vx: 0, vy: 0,
+      isThrown: false,
+      isDragging: false,
+      scale: 1,
+      ring: 60
+    };
+  }
+
+  setupThrow() {
+    let sx = 0, sy = 0, st = 0;
+    const start = (x, y) => {
+      if (this.ball.isThrown) return;
+      const rect = this.encCanvas.getBoundingClientRect();
+      const px = x - rect.left;
+      const py = y - rect.top;
+      if (Math.hypot(px - this.ball.x, py - this.ball.y) < 50) {
+        this.ball.isDragging = true;
+        sx = px; sy = py; st = performance.now();
+      }
+    };
+
+    const move = (x, y) => {
+      if (!this.ball.isDragging) return;
+      const rect = this.encCanvas.getBoundingClientRect();
+      this.ball.x = x - rect.left;
+      this.ball.y = y - rect.top;
+    };
+
+    const end = () => {
+      if (!this.ball.isDragging) return;
+      this.ball.isDragging = false;
+      const dy = this.ball.y - sy;
+      const dx = this.ball.x - sx;
+      const dt = Math.max(40, performance.now() - st);
+
+      if (dy < -25 && this.player.inventory[this.selectedBall] > 0) {
+        this.player.inventory[this.selectedBall]--;
+        this.updateBallUI();
+        this.ball.isThrown = true;
+        this.ball.vx = (dx / dt) * 14;
+        this.ball.vy = (dy / dt) * 16;
+        sfx.play(350, 0.2);
+      } else {
+        this.ball.x = this.encCanvas.width / 2;
+        this.ball.y = this.encCanvas.height - 80;
+      }
+    };
+
+    this.encCanvas.addEventListener("mousedown", e => start(e.clientX, e.clientY));
+    window.addEventListener("mousemove", e => move(e.clientX, e.clientY));
+    window.addEventListener("mouseup", end);
+
+    this.encCanvas.addEventListener("touchstart", e => { if (e.touches[0]) start(e.touches[0].clientX, e.touches[0].clientY); });
+    window.addEventListener("touchmove", e => { if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); });
+    window.addEventListener("touchend", end);
+  }
+
+  catchSuccess() {
+    const p = this.currentEnc;
+    this.wildPokemon = this.wildPokemon.filter(x => x.uid !== p.uid);
+    this.player.storage.push({ uid: Date.now(), id: p.data.id, name: p.data.name, cp: p.cp, sprite: p.data.sprite });
+    this.player.stardust += 100;
+    this.player.xp += 150;
+
+    if (this.player.xp >= this.player.level * 400) {
+      this.player.level++;
+      sfx.play(880, 0.5);
+      alert(`🎉 Level Up! You reached Level ${this.player.level}!`);
+    }
+
+    sfx.play(659, 0.4);
+    document.getElementById("celebration-img").src = p.data.sprite;
+    document.getElementById("celebration-title").innerText = `Gotcha! ${p.data.name} was caught!`;
+    document.getElementById("celebration-cp").innerText = p.cp;
+    document.getElementById("catch-celebration").style.display = "flex";
+  }
+
+  openPokestop(ps) {
+    document.getElementById("pokestop-view").style.display = "flex";
+    document.getElementById("txt-pokestop-name").innerText = `Pokéstop: ${ps.name}`;
+    document.getElementById("pokestop-loot-area").innerHTML = "";
+  }
+
+  spinPokestop() {
+    const disc = document.getElementById("pokestop-disc-elem");
+    disc.classList.add("spinning");
+    sfx.play(500, 0.3);
+
+    setTimeout(() => {
+      disc.classList.remove("spinning");
+      this.player.inventory.pokeball += 3;
+      this.player.inventory.greatball += 1;
+      this.player.inventory.razzberry += 2;
+      this.player.xp += 50;
+      this.updateUI();
+
+      document.getElementById("pokestop-loot-area").innerHTML = `
+        <div class="loot-bubble">🔴</div>
+        <div class="loot-bubble">🔵</div>
+        <div class="loot-bubble">🍇</div>
+      `;
+    }, 800);
+  }
+
+  renderStorage() {
+    document.getElementById("pokedex-header-title").innerText = `Pokémon Storage (${this.player.storage.length})`;
+    const g = document.getElementById("pokedex-grid");
+    g.innerHTML = this.player.storage.map(p => `
+      <div class="poke-card">
+        <span style="font-size:11px; font-weight:800; color:#38bdf8;">CP ${p.cp}</span>
+        <img src="${p.sprite}" class="poke-card-img">
+        <span style="font-size:12px; font-weight:800; margin-top:4px;">${p.name}</span>
+      </div>
+    `).join("");
+  }
+
+  renderPokedex() {
+    document.getElementById("pokedex-header-title").innerText = `Pokédex (${this.player.pokedexSeen.size}/${POKEMON_DATA.length})`;
+    const g = document.getElementById("pokedex-grid");
+    g.innerHTML = POKEMON_DATA.map(p => {
+      const seen = this.player.pokedexSeen.has(p.id);
+      return `
+        <div class="poke-card" style="opacity: ${seen ? 1 : 0.4}">
+          <span style="font-size:11px; color:#94a3b8;">#${p.id}</span>
+          <img src="${p.sprite}" class="poke-card-img">
+          <span style="font-size:12px; font-weight:800; margin-top:4px;">${seen ? p.name : '???'}</span>
+        </div>
+      `;
+    }).join("");
+  }
+
+  renderBag() {
+    const list = document.getElementById("bag-list");
+    const inv = this.player.inventory;
+    list.innerHTML = `
+      <div style="background:#1e293b; padding:12px; border-radius:12px; display:flex; justify-content:space-between;"><span>🔴 Poké Ball</span><b>${inv.pokeball}</b></div>
+      <div style="background:#1e293b; padding:12px; border-radius:12px; display:flex; justify-content:space-between;"><span>🔵 Great Ball</span><b>${inv.greatball}</b></div>
+      <div style="background:#1e293b; padding:12px; border-radius:12px; display:flex; justify-content:space-between;"><span>🟡 Ultra Ball</span><b>${inv.ultraball}</b></div>
+      <div style="background:#1e293b; padding:12px; border-radius:12px; display:flex; justify-content:space-between;"><span>🍇 Razz Berry</span><b>${inv.razzberry}</b></div>
+      <div style="background:#1e293b; padding:12px; border-radius:12px; display:flex; justify-content:space-between;"><span>💊 Potion</span><b>${inv.potion}</b></div>
+    `;
+  }
+
+  openGym() {
+    document.getElementById("gym-view").style.display = "flex";
+    this.bossHp = 1000;
+    this.playerHp = 300;
+    this.updateGymHp();
+  }
+
+  gymAttack(dmg) {
+    this.bossHp = Math.max(0, this.bossHp - dmg);
+    sfx.play(250, 0.1, "sawtooth");
+    if (Math.random() < 0.6) this.playerHp = Math.max(0, this.playerHp - 25);
+    this.updateGymHp();
+
+    if (this.bossHp <= 0) {
+      sfx.play(784, 0.5);
+      alert("🏆 RAID VICTORY! Awarded 1,000 XP & 500 Stardust!");
+      this.player.xp += 1000;
+      this.player.stardust += 500;
+      document.getElementById("gym-view").style.display = "none";
+      this.updateUI();
+    }
+  }
+
+  updateGymHp() {
+    document.getElementById("gym-boss-hp").style.width = `${(this.bossHp / 1000) * 100}%`;
+    document.getElementById("gym-player-hp").style.width = `${(this.playerHp / 300) * 100}%`;
+  }
+
+  loop(t) {
+    if (this.autoRoam) {
+      this.player.x += Math.cos(t * 0.001) * 1.5;
+      this.player.y += Math.sin(t * 0.001) * 1.5;
+    }
+
+    this.drawMap();
+    this.drawEncounter();
+
+    requestAnimationFrame(this.loop.bind(this));
+  }
+
+  drawMap() {
+    const ctx = this.mapCtx;
+    const w = this.mapCanvas.width;
+    const h = this.mapCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Background grass grid
+    ctx.fillStyle = "#064e3b";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = "rgba(52, 211, 153, 0.2)";
+    ctx.lineWidth = 1;
+    const grid = 40;
+    const ox = (w / 2 - this.player.x) % grid;
+    const oy = (h / 2 - this.player.y) % grid;
+
+    for (let x = ox; x < w; x += grid) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+    for (let y = oy; y < h; y += grid) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+
+    const cx = w / 2;
+    const cy = h / 2;
+
+    // Pulse radar
+    const pulse = (performance.now() * 0.06) % 90;
+    ctx.strokeStyle = `rgba(56, 189, 248, ${1 - pulse / 90})`;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy, pulse, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Pokestops
+    for (let ps of this.pokestops) {
+      const sx = cx + (ps.x - this.player.x);
+      const sy = cy + (ps.y - this.player.y);
+      ctx.fillStyle = "#3b82f6";
+      ctx.beginPath(); ctx.arc(sx, sy, 18, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = "#fff"; ctx.font = "14px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("🏛️", sx, sy + 5);
+    }
+
+    // Gyms
+    for (let g of this.gyms) {
+      const sx = cx + (g.x - this.player.x);
+      const sy = cy + (g.y - this.player.y);
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath(); ctx.arc(sx, sy, 22, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#facc15"; ctx.lineWidth = 4; ctx.stroke();
+      ctx.fillStyle = "#fff"; ctx.font = "16px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("⚔️", sx, sy + 6);
+    }
+
+    // Wild Pokemon
+    for (let p of this.wildPokemon) {
+      const sx = cx + (p.x - this.player.x);
+      const sy = cy + (p.y - this.player.y);
+      ctx.fillStyle = "rgba(0,0,0,0.3)";
+      ctx.beginPath(); ctx.ellipse(sx, sy + 18, 18, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+      if (p.image && p.image.complete) {
+        ctx.drawImage(p.image, sx - 26, sy - 26, 52, 52);
+      } else {
+        ctx.fillStyle = "#facc15";
+        ctx.beginPath(); ctx.arc(sx, sy, 16, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    // Player
+    ctx.fillStyle = "#38bdf8";
+    ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.stroke();
+  }
+
+  drawEncounter() {
+    if (document.getElementById("encounter-view").style.display !== "flex") return;
+    const ctx = this.encCtx;
+    const w = this.encCanvas.width;
+    const h = this.encCanvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const cx = w / 2;
+    const cy = h / 2 - 40;
+
+    // Pokemon
+    if (this.pokeImg && this.pokeImg.complete) {
+      ctx.drawImage(this.pokeImg, cx - 80, cy - 80, 160, 160);
+    }
+
+    // Shrinking Target Ring
+    if (!this.ball.isThrown) {
+      this.ball.ring -= 0.6;
+      if (this.ball.ring < 16) this.ball.ring = 65;
+      ctx.strokeStyle = "#22c55e";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, this.ball.ring, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Pokeball physics
+    if (this.ball.isThrown) {
+      this.ball.x += this.ball.vx;
+      this.ball.y += this.ball.vy;
+      this.ball.vy += 0.45;
+      this.ball.scale = Math.max(0.4, this.ball.scale - 0.015);
+
+      if (Math.hypot(this.ball.x - cx, this.ball.y - cy) < 45 && !this.ball.hit) {
+        this.ball.hit = true;
+        sfx.play(500, 0.1);
+        setTimeout(() => this.catchSuccess(), 500);
+      }
+    }
+
+    // Draw Pokeball
+    ctx.save();
+    ctx.translate(this.ball.x, this.ball.y);
+    ctx.scale(this.ball.scale, this.ball.scale);
+
+    ctx.fillStyle = this.selectedBall === "ultraball" ? "#eab308" : (this.selectedBall === "greatball" ? "#3b82f6" : "#ef4444");
+    ctx.beginPath(); ctx.arc(0, 0, 24, Math.PI, 0, false); ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.beginPath(); ctx.arc(0, 0, 24, 0, Math.PI, false); ctx.fill();
+    ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, 0, 24, 0, Math.PI * 2); ctx.moveTo(-24, 0); ctx.lineTo(24, 0); ctx.stroke();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.restore();
+  }
+}
+
+window.game = new PokemonGo();
+</script>
+
 </body>
 </html>
