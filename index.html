@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pokémon GO — Web Edition</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png">
+</head>
+<body>
+
+<div id="app-container">
+
+  <!-- TOP TRAINER STATUS BAR -->
+  <div id="top-bar">
+    <div class="trainer-pill" id="btn-profile">
+      <div class="trainer-avatar" id="avatar-circle">G</div>
+      <div class="trainer-info">
+        <span class="trainer-name" id="display-trainer-name">Gandhi</span>
+        <span class="trainer-level" id="display-trainer-lvl">Lv. 1 • 0 XP</span>
+      </div>
+    </div>
+
+    <div class="top-resources">
+      <div class="resource-badge">
+        <span class="stardust-icon">✨</span>
+        <span id="display-stardust">1,000</span>
+      </div>
+      <div class="resource-badge">
+        <span class="pokecoin-icon">🪙</span>
+        <span id="display-coins">150</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP VIEWPORT CANVAS -->
+  <div id="map-viewport">
+    <canvas id="map-canvas"></canvas>
+
+    <!-- DPAD MOVEMENT CONTROLS -->
+    <div id="movement-controls">
+      <div class="dpad-btn" id="dpad-up">▲</div>
+      <div class="dpad-row">
+        <div class="dpad-btn" id="dpad-left">◀</div>
+        <div class="dpad-btn" id="dpad-down">▼</div>
+        <div class="dpad-btn" id="dpad-right">▶</div>
+      </div>
+    </div>
+
+    <button id="auto-roam-btn">🧭 Auto Roam: OFF</button>
+  </div>
+
+  <!-- BOTTOM ACTION BAR -->
+  <div id="bottom-bar">
+    <div class="side-btn" id="btn-nearby" title="Nearby Pokémon">🔍</div>
+    <div class="main-pokeball-menu" id="btn-main-menu" title="Main Menu">
+      <div class="main-pokeball-inner"></div>
+    </div>
+    <div class="side-btn" id="btn-bag" title="Item Bag">🎒</div>
+  </div>
+
+  <!-- ENCOUNTER & CATCH OVERLAY -->
+  <div class="overlay-screen" id="encounter-screen">
+    <div class="encounter-header">
+      <div class="encounter-info">
+        <div class="encounter-name" id="enc-name">Pikachu</div>
+        <div class="encounter-cp" id="enc-cp">CP 420</div>
+      </div>
+      <button class="flee-btn" id="btn-flee">🏃 Flee</button>
+    </div>
+
+    <canvas id="encounter-canvas"></canvas>
+
+    <div class="encounter-bottom-bar">
+      <button class="berry-btn" id="btn-feed-berry">🍇 Razz Berry (<span id="count-berry">5</span>)</button>
+      <button class="ball-selector" id="btn-toggle-ball">🔴 <span id="current-ball-name">Poké Ball</span> (<span id="count-ball">20</span>)</button>
+    </div>
+  </div>
+
+  <!-- CATCH RESULT MODAL -->
+  <div id="catch-modal">
+    <img src="" alt="Caught Pokemon" class="catch-image" id="catch-modal-img">
+    <div class="catch-title" id="catch-modal-title">Gotcha! Pikachu was caught!</div>
+    <div class="catch-stats">
+      <div class="catch-stat-item">
+        <span class="catch-stat-val" id="catch-modal-cp">420</span>
+        <span class="catch-stat-lbl">Combat Power</span>
+      </div>
+      <div class="catch-stat-item">
+        <span class="catch-stat-val" id="catch-modal-candy">+3</span>
+        <span class="catch-stat-lbl">Candies</span>
+      </div>
+      <div class="catch-stat-item">
+        <span class="catch-stat-val" id="catch-modal-stardust">+100</span>
+        <span class="catch-stat-lbl">Stardust</span>
+      </div>
+    </div>
+    <button class="btn-primary" id="btn-catch-ok">OK</button>
+  </div>
+
+  <!-- POKÉSTOP SCREEN -->
+  <div class="overlay-screen" id="pokestop-screen">
+    <div class="screen-header" style="width: 100%; padding: 16px;">
+      <h2 class="screen-title" id="pokestop-title">Pokéstop: Tech Hub</h2>
+      <button class="close-btn" id="btn-close-pokestop">✕</button>
+    </div>
+    <div class="pokestop-disc-container" id="pokestop-disc">
+      <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Pokéstop Photo" class="pokestop-disc-img">
+    </div>
+    <p style="font-size: 13px; color: #94a3b8; font-weight: 600;">Swipe or tap disc to spin for items!</p>
+    <div class="pokestop-loot-bubbles" id="pokestop-loot"></div>
+  </div>
+
+  <!-- MAIN MENU MODAL -->
+  <div class="overlay-screen" id="menu-screen">
+    <div class="screen-header">
+      <h2 class="screen-title">Main Menu</h2>
+      <button class="close-btn" id="btn-close-menu">✕</button>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+      <button class="btn-primary" id="menu-btn-pokemon" style="background: #10b981;">🐾 Pokémon Storage</button>
+      <button class="btn-primary" id="menu-btn-pokedex" style="background: #ef4444;">📖 Pokédex</button>
+      <button class="btn-primary" id="menu-btn-bag" style="background: #3b82f6;">🎒 Items Bag</button>
+      <button class="btn-primary" id="menu-btn-gym" style="background: #f59e0b;">⚔️ Gym Raid Arena</button>
+      <button class="btn-primary" id="menu-btn-reset" style="background: #64748b; font-size: 12px; padding: 8px;">🔄 Reset Save Data</button>
+    </div>
+  </div>
+
+  <!-- POKEMON STORAGE / POKEDEX SCREEN -->
+  <div class="overlay-screen" id="pokedex-screen">
+    <div class="screen-header">
+      <h2 class="screen-title" id="pokedex-title">Pokémon Storage (0)</h2>
+      <button class="close-btn" id="btn-close-pokedex">✕</button>
+    </div>
+    <div class="pokemon-grid" id="pokemon-grid"></div>
+  </div>
+
+  <!-- ITEM BAG SCREEN -->
+  <div class="overlay-screen" id="bag-screen">
+    <div class="screen-header">
+      <h2 class="screen-title">Item Bag</h2>
+      <button class="close-btn" id="btn-close-bag">✕</button>
+    </div>
+    <div id="bag-items-list" style="display: flex; flex-direction: column; gap: 12px; overflow-y: auto;"></div>
+  </div>
+
+  <!-- GYM RAID ARENA SCREEN -->
+  <div class="overlay-screen" id="gym-screen">
+    <div class="screen-header">
+      <h2 class="screen-title">⚔️ Legendary Raid Battle</h2>
+      <button class="close-btn" id="btn-close-gym">✕</button>
+    </div>
+    <div class="gym-arena">
+      <div class="boss-container">
+        <h3 id="gym-boss-name" style="font-weight: 800; font-size: 18px; color: #f87171;">Mewtwo (Raid Boss)</h3>
+        <div class="hp-bar-outer"><div class="hp-bar-inner" id="boss-hp-bar"></div></div>
+        <img id="gym-boss-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png" style="width: 130px; height: 130px; object-fit: contain; margin-top: 10px;">
+      </div>
+
+      <div class="player-poke-container">
+        <img id="gym-player-img" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png" style="width: 110px; height: 110px; object-fit: contain;">
+        <div class="hp-bar-outer"><div class="hp-bar-inner" id="player-hp-bar"></div></div>
+        <h4 id="gym-player-name" style="font-weight: 700; font-size: 14px; margin-top: 4px; color: #38bdf8;">Charizard (CP 2400)</h4>
+      </div>
+
+      <div class="gym-controls">
+        <button class="btn-primary" id="btn-gym-attack" style="padding: 10px 20px; font-size: 14px;">⚡ Fast Attack</button>
+        <button class="charge-move-btn" id="btn-gym-charge">🔥 Charge Move</button>
+        <button class="btn-primary" id="btn-gym-dodge" style="padding: 10px 20px; background: #64748b; font-size: 14px;">🛡️ Dodge</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="pokemon_data.js"></script>
+<script src="audio.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
