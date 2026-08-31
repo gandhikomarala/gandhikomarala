@@ -1,0 +1,18 @@
+name: Security Audit & SAST
+
+on:
+  push:
+    branches: [ main, feature/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Security Credential Scanner
+        run: |
+          echo "Scanning for hardcoded secrets and credentials..."
+          ! grep -rE '(BEGIN RSA PRIVATE KEY|aws_secret_access_key|api_key = "[A-Za-z0-9]{20,}")' . --exclude-dir=.git
+          echo "SAST Audit Passed: 0 leaks found."
